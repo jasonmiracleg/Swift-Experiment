@@ -401,6 +401,7 @@
 				DEVELOPMENT_TEAM = JKZSVJ42MD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "We need access to your Apple Music library to personalize your experience.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your heart rate and HRV to monitor your stress levels.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We may update your health data for better tracking.";
@@ -432,6 +433,7 @@
 				DEVELOPMENT_TEAM = JKZSVJ42MD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "We need access to your Apple Music library to personalize your experience.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your heart rate and HRV to monitor your stress levels.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We may update your health data for better tracking.";

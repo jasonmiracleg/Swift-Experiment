@@ -11,7 +11,7 @@ import SwiftUI
 struct TrialsApp: App {
     var body: some Scene {
         WindowGroup {
-            LiveCameraClassification()
+            FruitObjectDetectionView()
         }
     }
 }

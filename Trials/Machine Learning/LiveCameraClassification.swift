@@ -14,20 +14,13 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     private let captureSession = AVCaptureSession()
     
     private var requests = [VNRequest]()
-    private var vnModel: VNCoreMLModel?
     
-    var onResult: ((VNRequest, Error?) -> Void)?
+    var onClassification: ((String) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCamera()
-        if let vnModel = vnModel {
-            setupVision(with: vnModel)
-        }
-    }
-    
-    func configure(with model: VNCoreMLModel){
-        self.vnModel = model
+        setupVision()
     }
     
     func setupCamera() {
@@ -55,18 +48,31 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         previewLayer.frame = view.layer.bounds
         view.layer.addSublayer(previewLayer)
         
-        DispatchQueue.global(qos: .userInitiated).async {
-            self.captureSession.startRunning()
-        }
+        captureSession.startRunning()
     }
     
-    func setupVision(with model: VNCoreMLModel) {
-        let request = VNCoreMLRequest(model: model) { [weak self] request, error in
+    func setupVision() {
+        let config = MLModelConfiguration()
+        guard let model = try? VNCoreMLModel(for: Resnet50(configuration: config).model)
+        else {
+            print("Failed to load model")
+            return
+        }
+        
+        let request = VNCoreMLRequest(model: model){
+            [weak self] request, error in
+            guard let results = request.results as? [VNClassificationObservation],
+                  let topResult = results.first else {
+                return
+            }
+            
             DispatchQueue.main.async {
-                self?.onResult?(request, error)
+                let text = "Classification: \(topResult.identifier), Confidence: \(topResult.confidence)"
+                self?.onClassification?(text)
             }
         }
-        request.imageCropAndScaleOption = VNImageCropAndScaleOption.scaleFill
+        
+        request.imageCropAndScaleOption = .centerCrop
         self.requests = [request]
     }
     
@@ -82,13 +88,13 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
 }
 
 struct CameraView: UIViewControllerRepresentable {
-    let vnModel: VNCoreMLModel
-    let onResult: (VNRequest, Error?) -> Void
+    @Binding var classificationResult: String
     
     func makeUIViewController(context: Context) -> CameraViewController {
         let cameraVC = CameraViewController()
-        cameraVC.configure(with: vnModel)
-        cameraVC.onResult = onResult
+        cameraVC.onClassification = { result in
+            self.classificationResult = result
+        }
         return cameraVC
     }
     
@@ -97,28 +103,13 @@ struct CameraView: UIViewControllerRepresentable {
 
 struct LiveCameraClassification: View {
     @State private var classificationResult = "No Classification Yet"
-    private let model: VNCoreMLModel
-    
-    init() {
-        let config = MLModelConfiguration()
-        if let resnetModel = try? VNCoreMLModel(for: Resnet50(configuration: config).model) {
-            self.model = resnetModel
-        } else {
-            fatalError("Failed to load Resnet50")
-        }
-    }
     
     var body: some View {
         VStack {
-            CameraView(vnModel: model) { request, error in
-                if let results = request.results as? [VNClassificationObservation],
-                   let top = results.first {
-                    classificationResult = "\(top.identifier): \(String(format: "%.2f", top.confidence))"
-                }
-            }
-            .frame(height: 400)
-            .cornerRadius(20)
-            .padding()
+            CameraView(classificationResult: $classificationResult)
+                .frame(height: 400)
+                .cornerRadius(20)
+                .padding()
             
             Text(classificationResult)
                 .font(.headline)
@@ -126,7 +117,6 @@ struct LiveCameraClassification: View {
         }
     }
 }
-
 
 #Preview {
     LiveCameraClassification()

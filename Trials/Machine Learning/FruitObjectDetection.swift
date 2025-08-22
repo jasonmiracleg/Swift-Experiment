@@ -153,7 +153,6 @@ struct FruitObjectDetectionView: View {
     var body: some View {
         VStack {
             FruitCameraView(detectionResult: $detectionResult)
-                .frame(height: 400)
                 .cornerRadius(20)
                 .padding()
             

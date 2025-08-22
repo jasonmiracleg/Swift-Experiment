@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct TrialsApp: App {
     var body: some Scene {
         WindowGroup {
-            FruitObjectDetectionView()
+            PatientListView()
         }
+        .modelContainer(for: [Patient.self, Package.self, Appointment.self])
     }
 }

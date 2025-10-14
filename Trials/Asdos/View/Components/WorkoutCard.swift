@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct WorkoutCard: View {
-    let workout: Workout
+    @Binding var workout: Workout
     var onToggle: (() -> Void)? = nil
+    var isVisible: Bool
 
     var body: some View {
         HStack(spacing: 16) {
@@ -27,40 +28,34 @@ struct WorkoutCard: View {
                     .font(.headline)
                     .lineLimit(1)  // prevent overflow
                     .truncationMode(.tail)
-
-                Text(workout.type)
+                
+                Text(String(workout.caloriesBurned) + " Cals")
                     .font(.subheadline)
+                
+                Text(workout.type)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Button(action: {
-                onToggle?()
-            }
-            ) {
-                Image(
-                    systemName: workout.isAdded
-                        ? "minus.circle.fill" : "plus.circle.fill"
-                )
-                .font(.system(size: 28))
-                .foregroundStyle(workout.isAdded ? .red : .blue)
+            if isVisible {
+                Button(action: {
+                    onToggle?()
+                }
+                ) {
+                    Image(
+                        systemName: "minus.circle.fill"
+                    )
+                    .font(.system(size: 28))
+                    .foregroundStyle(.red)
+                }
             }
         }
         .padding()
-        .frame(height: 90)
+        .frame(height: 100)
         .background(Color.green.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
     }
 }
 
-#Preview {
-    WorkoutCard(
-        workout: Workout(
-            title: "Morning Yoga",
-            type: "Flexibility",
-            caloriesBurned: 180,
-            icon: "figure.walk"
-        )
-    )
-}

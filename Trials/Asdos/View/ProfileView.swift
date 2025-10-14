@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var viewModel = ProfileViewModel()
+    @StateObject var viewModel: MainViewModel
     
     var body: some View {
         VStack(spacing: 16) {
@@ -20,29 +20,39 @@ struct ProfileView: View {
             }
             ProfileCard(user: viewModel.user)
             HStack {
-                Text("Friend Suggestion")
+                Text("Recently Added")
                     .font(.headline)
                 Spacer()
             }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(viewModel.users) { user in
-                        FriendCard(user: user) {
-                            viewModel.addFriend(for: user)
+            if viewModel.user.friends.isEmpty {
+                Spacer()
+                Text("No Friends yet.")
+                    .foregroundColor(.secondary)
+                Spacer()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach($viewModel.user.friends.suffix(3)) { $user in
+                            FriendCard(user: $user, isVisible: false)
                         }
                     }
                 }
             }
             HStack {
-                Text("Workout List")
+                Text("Recent Workouts")
                     .font(.headline)
                 Spacer()
             }
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 16) {
-                    ForEach(viewModel.workouts) { workout in
-                        WorkoutCard(workout: workout) {
-                            viewModel.toggleWorkout(for: workout)
+            if viewModel.user.workouts.isEmpty {
+                Spacer()
+                Text("No Workouts yet")
+                    .foregroundColor(.secondary)
+                Spacer()
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 16) {
+                        ForEach($viewModel.user.workouts.suffix(3)) { $workout in
+                            WorkoutCard(workout: $workout, isVisible: false)
                         }
                     }
                 }
@@ -50,8 +60,4 @@ struct ProfileView: View {
         }
         .padding(.horizontal, 32)
     }
-}
-
-#Preview {
-    ProfileView()
 }

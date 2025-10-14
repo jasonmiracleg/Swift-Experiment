@@ -12,8 +12,7 @@ import SwiftData
 struct TrialsApp: App {
     var body: some Scene {
         WindowGroup {
-            PatientListView()
+            MainView()
         }
-        .modelContainer(for: [Patient.self, Package.self, Appointment.self])
     }
 }

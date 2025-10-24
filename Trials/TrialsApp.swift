@@ -12,7 +12,8 @@ import SwiftData
 struct TrialsApp: App {
     var body: some Scene {
         WindowGroup {
-            MainView()
+            RecordingView()
         }
+        .modelContainer(for: TranscriptRecord.self)
     }
 }

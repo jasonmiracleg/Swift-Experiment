@@ -12,8 +12,12 @@ import SwiftData
 struct TrialsApp: App {
     var body: some Scene {
         WindowGroup {
-            RecordingView()
+            CompanyView()
         }
-        .modelContainer(for: TranscriptRecord.self)
+        .modelContainer(for: [
+            Company.self,
+            Project.self,
+            Employee.self,
+        ])
     }
 }
